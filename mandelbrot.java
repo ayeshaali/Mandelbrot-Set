@@ -6,8 +6,7 @@ public class mandelbrot {
 		StdDraw.filledRectangle(600,150,200,150);
 		ComplexNumber test = new ComplexNumber(100, 140);
 		StdDraw.setPenRadius(.01);
-		recursive(-2, 2, -1.5, 1.5, 1);
-		// julia(-2, 2, -1.5, 1.5, 1, test);
+		recursive(-2, 2, -1.5, 1.5, 1, 1, new ComplexNumber(0,0));
 		zoom();
 	}
 
@@ -21,9 +20,9 @@ public class mandelbrot {
     	double previousy = 1.5; double previousJy = 1.5;
    	 	double newX = 0; double newJX = 0;
    		double newY = 0; double newJY = 0;	
-        
-        while (true) {
-            if (StdDraw.mousePressed()) {
+        boolean x= true;
+        while (x ==true) {
+        	if (StdDraw.mousePressed()) {
             	lastX = StdDraw.mouseX(); lastY = StdDraw.mouseY();
             	if (lastX<401) {
             		if (lastX != trackX || lastY != trackY) {
@@ -41,52 +40,52 @@ public class mandelbrot {
             } else if (StdDraw.isKeyPressed(73)) {
             	zoomSetUp(lastX);
             	if (lastX > 400) {
+            		x= false;
             		timeJ++;
-            		previousJx/=2; previousJy/=2;
-            		julia(newJX - previousJx, newJX + previousJx , newJY - previousJy, newJY + previousJy, timeJ, new ComplexNumber(newX, newY));
+            		previousJx/=1.5; previousJy/=1.5;
+            		recursive(newJX - previousJx, newJX + previousJx , newJY - previousJy, newJY + previousJy, timeJ, 2, new ComplexNumber(newX, newY));
+            		x= true;
             	} else if (lastX < 401) {
+            		x= false;
             		time++;
-            		previousx/=2; previousy/=2;
-            		recursive(newX - previousx, newX + previousx , newY - previousy, newY + previousy, time);
+            		previousx/=1.5; previousy/=1.5;
+            		x= false;
+            		recursive(newX - previousx, newX + previousx , newY - previousy, newY + previousy, time, 1, new ComplexNumber(0, 0));
+            		x= true;
             	}	
-            } else if (StdDraw.isKeyPressed(74)) {
-            	// zoomSetUp(lastX);
-            	if (lastX < 401) {
+            } else if (StdDraw.isKeyPressed(79)) {
+            	zoomSetUp(lastX);
+            	if (lastX < 400) {
+            		x= false;
             		time--;
-            		previousx*=2; previousy*=2;	
-           			recursive(newX - previousx, newX + previousx , newY - previousy, newY + previousy, time);
+            		previousx*=1.5; previousy*=1.5;	
+           			recursive(newX - previousx, newX + previousx , newY - previousy, newY + previousy, time, 1, new ComplexNumber(0, 0));
+            		x= true;
             	} else if (lastX > 400) {
+            		x= false;
             		timeJ--;
-            		previousJx*=2; previousJy*=previousJy;	
-            		julia(newJX - previousJx, newJX + previousJx , newJY - previousJy, newJY + previousJy, timeJ, new ComplexNumber(newX, newY));
+            		previousJx*=1.5; previousJy*=1.5;	
+            		recursive(newJX - previousJx, newJX + previousJx , newJY - previousJy, newJY + previousJy, timeJ, 2, new ComplexNumber(newX, newY));
+            		x= true;
             	}	
             }	
         }
     }
 
-	public static void recursive(double x1, double x2, double y1, double y2, double time){
+	public static void recursive(double x1, double x2, double y1, double y2, double time, int choice, ComplexNumber juliaC){
 		System.out.println(x1+" "+x2+" "+y1+" "+y2);
-		ComplexNumber z0 = new ComplexNumber(0,0);
 		int ans;
 		for (double x = x1; x<= x2; x+=0.03/(Math.pow(time, 2))){
 			for(double y = y1; y<=y2; y+=0.03/(Math.pow(time, 2))) {
-				ans = check(z0, new ComplexNumber(x, y), 0);	
-				color(ans);
-				ComplexNumber.leftGraph(new ComplexNumber(x, y), x1, x2, y1, y2);		
-			}
-		}
-	}
-
-	public static void julia(double x1, double x2, double y1, double y2, double time, ComplexNumber cons){
-		System.out.println("julia: "+x1+" "+x2+" "+y1+" "+y2);
-		ComplexNumber z0;
-		int ans;
-		for (double x = x1; x<= x2; x+=0.03/(Math.pow(time, 2))){
-			for(double y = y1; y<=y2; y+=0.03/(Math.pow(time, 2))){
-				z0 = new ComplexNumber(x,y);
-				ans = check(z0, cons, 0);	
-				color(ans);
-				ComplexNumber.rightGraph(z0, x1, x2, y1, y2);
+				if (choice ==1) {
+					ans = check(juliaC, new ComplexNumber(x, y), 0);
+					color(ans);
+					ComplexNumber.leftGraph(new ComplexNumber(x, y), x1, x2, y1, y2);	
+				} else if (choice ==2) {
+					ans = check(new ComplexNumber(x, y), juliaC, 0);
+					color(ans);	
+					ComplexNumber.rightGraph(new ComplexNumber(x, y), x1, x2, y1, y2);
+				}		
 			}
 		}
 	}
@@ -94,7 +93,6 @@ public class mandelbrot {
 	public static int check(ComplexNumber zn, ComplexNumber c, int counter){
 		int ans = 0;
 		double magnitude = zn.magnitude();
-		// System.out.println(magnitude);
 
 		if (magnitude < 2){
 			if (counter < 255){
