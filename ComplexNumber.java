@@ -277,6 +277,12 @@ public class ComplexNumber {
 		return ((int) (this.magnitude() -c.magnitude()));
 	}
 	
+	public static void graph(ComplexNumber cons, double x1, double x2, double y1, double y2, double choice) {
+		if (choice == 1) leftGraph(cons, x1, x2, y1, y2);
+		else if (choice == 2) rightGraph(cons, x1, x2, y1, y2);
+		
+	}
+
 	public static void leftGraph(ComplexNumber cons, double x1, double x2, double y1, double y2) {
 		double x = scale(cons.getReal(), x1, x2, 0, 400);
 		double y = scale(cons.getImaginary(), y1, y2, 0, 300);

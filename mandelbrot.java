@@ -7,14 +7,13 @@ public class mandelbrot {
 		ComplexNumber test = new ComplexNumber(100, 140);
 		StdDraw.setPenRadius(.01);
 		recursive(-2, 2, -1.5, 1.5, 1);
-		julia(-2, 2, -1.5, 1.5, 1, test);
+		// julia(-2, 2, -1.5, 1.5, 1, test);
 		zoom();
 	}
 
 	public static void zoom() {
 		double lastX = 200; double lastY = 150;
-		double lastMX = 200; double lastJX = 600;
-   		double lastMY = 150; double lastJY = 150;
+		double lastJX = 600; double lastJY = 150;
     	double trackX = 200; double trackJX = 200;
     	double trackY = 150; double trackJY = 150;
     	double time = 1; double timeJ = 0;
@@ -25,60 +24,41 @@ public class mandelbrot {
         
         while (true) {
             if (StdDraw.mousePressed()) {
-            	lastX = StdDraw.mouseX();
-            	lastY = StdDraw.mouseY();
-            	if (StdDraw.mouseX()<401) {
-            		lastMX = StdDraw.mouseX();
-            		lastMY = StdDraw.mouseY();
+            	lastX = StdDraw.mouseX(); lastY = StdDraw.mouseY();
+            	if (lastX<401) {
             		if (lastX != trackX || lastY != trackY) {
             			newX = ComplexNumber.scale(lastX, 0, 400, newX - previousx,  newX + previousx);
       					newY = ComplexNumber.scale(lastY, 0, 300, newY - previousy, newY + previousy);
-            			trackX = lastX;
-            			trackY = lastY;
+            			trackX = lastX; trackY = lastY;
             		}
-        		} else if (StdDraw.mouseX()>400) {
-        			lastJX = StdDraw.mouseX();
-        			lastJY = StdDraw.mouseY();
-            		if (lastJX != trackJX || lastJY != trackJY) {
+        		} else if (lastX>400) {
+            		if (StdDraw.mouseX() != trackJX || StdDraw.mouseY() != trackJY) {
             			newJX = ComplexNumber.scale(lastX, 400, 800, newJX - previousJx,  newJX + previousJx);
             			newJY = ComplexNumber.scale(lastY, 0, 300, newJY - previousJy, newJY + previousJy);
-            			trackJX = lastJX;
-            			trackJY = lastJY;
+            			trackJX = StdDraw.mouseX(); trackJY = StdDraw.mouseY();
             		}
         		}
             } else if (StdDraw.isKeyPressed(73)) {
+            	zoomSetUp(lastX);
             	if (lastX > 400) {
-            		StdDraw.setPenColor(StdDraw.BLACK);
-            		StdDraw.filledRectangle(600,150,200,150);
-            		ComplexNumber cons = new ComplexNumber(newX, newY);
             		timeJ++;
-            		previousJx = previousJx/2;
-            		previousJy = previousJy/2;
-            		julia(newJX - previousJx, newJX + previousJx , newJY - previousJy, newJY + previousJy, timeJ, cons);
+            		previousJx/=2; previousJy/=2;
+            		julia(newJX - previousJx, newJX + previousJx , newJY - previousJy, newJY + previousJy, timeJ, new ComplexNumber(newX, newY));
             	} else if (lastX < 401) {
-            		StdDraw.setPenColor(StdDraw.WHITE);
-            		StdDraw.filledRectangle(200,150,200,150);
             		time++;
-            		previousx = previousx/2;
-            		previousy = previousy/2;
+            		previousx/=2; previousy/=2;
             		recursive(newX - previousx, newX + previousx , newY - previousy, newY + previousy, time);
             	}	
             } else if (StdDraw.isKeyPressed(74)) {
+            	// zoomSetUp(lastX);
             	if (lastX < 401) {
-            		StdDraw.setPenColor(StdDraw.WHITE);
-            		StdDraw.filledRectangle(200,150,200,150);
             		time--;
-            		previousx = previousx*2;
-            		previousy = previousy*2;	
+            		previousx*=2; previousy*=2;	
            			recursive(newX - previousx, newX + previousx , newY - previousy, newY + previousy, time);
             	} else if (lastX > 400) {
-            		StdDraw.setPenColor(StdDraw.BLACK);
-            		StdDraw.filledRectangle(600,150,200,150);
-            		ComplexNumber cons = new ComplexNumber(newX, newY); 
             		timeJ--;
-            		previousJx = previousJx*2;
-            		previousJy = previousJy*2;	
-            		julia(newJX - previousJx, newJX + previousJx , newJY - previousJy, newJY + previousJy, timeJ, cons);
+            		previousJx*=2; previousJy*=previousJy;	
+            		julia(newJX - previousJx, newJX + previousJx , newJY - previousJy, newJY + previousJy, timeJ, new ComplexNumber(newX, newY));
             	}	
             }	
         }
@@ -142,6 +122,16 @@ public class mandelbrot {
 			}
 			StdDraw.setPenColor(ans, 0, ans);
 		}
+	}
+
+	public static void zoomSetUp(double xVal) {
+		if (xVal< 400) {
+			StdDraw.setPenColor(StdDraw.WHITE);
+       		StdDraw.filledRectangle(200,150,200,150);
+       	} else if (xVal > 400) { 
+        	StdDraw.setPenColor(StdDraw.BLACK);
+           	StdDraw.filledRectangle(600,150,200,150);
+        }
 	}
 
 }
