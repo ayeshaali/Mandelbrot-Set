@@ -20,8 +20,21 @@ public class mandelbrot {
     	double previousy = 1.5; double previousJy = 1.5;
    	 	double newX = 0; double newJX = 0;
    		double newY = 0; double newJY = 0;	
+        double mX; double mY; ComplexNumber mouse;
         boolean x= true;
-        while (x ==true) {
+        
+        while (x==true) {
+        	if (StdDraw.mouseX()< 401) {        	
+        		mX = ComplexNumber.scale(StdDraw.mouseX(), 0, 400, newX - previousx,  newX + previousx);
+        		mY = ComplexNumber.scale(StdDraw.mouseY(), 0, 300, newY - previousy, newY + previousy);
+        	} else {
+        		mX = ComplexNumber.scale(StdDraw.mouseY(), 400, 800, newJX - previousJx,  newJX + previousJx);
+        		mY = ComplexNumber.scale(StdDraw.mouseY(), 0, 300, newJY - previousJy, newJY + previousJy);
+        	}
+      		
+      		mouse = new ComplexNumber(mX, mY);
+        	System.out.println(mouse.toString());
+        	
         	if (StdDraw.mousePressed()) {
             	lastX = StdDraw.mouseX(); lastY = StdDraw.mouseY();
             	if (lastX<401) {
@@ -73,8 +86,8 @@ public class mandelbrot {
     }
 
 	public static void recursive(double x1, double x2, double y1, double y2, double time, int choice, ComplexNumber juliaC){
-		System.out.println(x1+" "+x2+" "+y1+" "+y2);
 		int ans;
+		System.out.println(x1+" "+x2+" "+y1+" "+y2);
 		for (double x = x1; x<= x2; x+=0.03/(Math.pow(time, 2))){
 			for(double y = y1; y<=y2; y+=0.03/(Math.pow(time, 2))) {
 				if (choice ==1) {
