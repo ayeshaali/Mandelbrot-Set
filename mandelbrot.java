@@ -3,10 +3,13 @@ public class mandelbrot {
 		StdDraw.setCanvasSize(800,300);
 		StdDraw.setXscale(0, 800);
 		StdDraw.setYscale(0, 300);
+		StdDraw.enableDoubleBuffering();
 		StdDraw.filledRectangle(600,150,200,150);
+		StdDraw.show();
 		ComplexNumber test = new ComplexNumber(100, 140);
-		StdDraw.setPenRadius(.01);
+		StdDraw.setPenRadius(.001);
 		recursive(-2, 2, -1.5, 1.5, 1, 1, new ComplexNumber(0,0));
+		StdDraw.show();
 		zoom();
 	}
 
@@ -15,25 +18,33 @@ public class mandelbrot {
 		double lastJX = 600; double lastJY = 150;
     	double trackX = 200; double trackJX = 200;
     	double trackY = 150; double trackJY = 150;
+    	double centerX = 0;
+    	double centerY = 0;
+    	double centerJX = 0; 
+    	double centerJY = 0;
     	double time = 1; double timeJ = 0;
     	double previousx = 2; double previousJx = 2; 
     	double previousy = 1.5; double previousJy = 1.5;
    	 	double newX = 0; double newJX = 0;
    		double newY = 0; double newJY = 0;	
-        double mX; double mY; ComplexNumber mouse;
+        double mX = 0; double mY = 0; ComplexNumber mouse;
         boolean x= true;
+        int count = 0;
         
         while (x==true) {
         	if (StdDraw.mouseX()< 401) {        	
-        		mX = ComplexNumber.scale(StdDraw.mouseX(), 0, 400, newX - previousx,  newX + previousx);
-        		mY = ComplexNumber.scale(StdDraw.mouseY(), 0, 300, newY - previousy, newY + previousy);
-        	} else {
-        		mX = ComplexNumber.scale(StdDraw.mouseY(), 400, 800, newJX - previousJx,  newJX + previousJx);
-        		mY = ComplexNumber.scale(StdDraw.mouseY(), 0, 300, newJY - previousJy, newJY + previousJy);
+        		mX = ComplexNumber.scale(StdDraw.mouseX(), 0, 400, centerX - previousx,  centerX + previousx);
+        		mY = ComplexNumber.scale(StdDraw.mouseY(), 0, 300, centerY - previousy, centerY + previousy);
+        	} else if (StdDraw.mouseX()> 400) {
+        		mX = ComplexNumber.scale(StdDraw.mouseX(), 400, 800, centerJX - previousJx,  centerJX + previousJx);
+        		mY = ComplexNumber.scale(StdDraw.mouseY(), 0, 300, centerJY - previousJy, centerJY + previousJy);
         	}
       		
+      		count++;
       		mouse = new ComplexNumber(mX, mY);
-        	System.out.println(mouse.toString());
+        	if (count%1000 == 0){
+        		System.out.println(mouse.toString());
+        	}
         	
         	if (StdDraw.mousePressed()) {
             	lastX = StdDraw.mouseX(); lastY = StdDraw.mouseY();
@@ -56,14 +67,17 @@ public class mandelbrot {
             		x= false;
             		timeJ++;
             		previousJx/=1.5; previousJy/=1.5;
+            		centerJX = newJX; centerJY = newJY;
             		recursive(newJX - previousJx, newJX + previousJx , newJY - previousJy, newJY + previousJy, timeJ, 2, new ComplexNumber(newX, newY));
+            		StdDraw.show();
             		x= true;
             	} else if (lastX < 401) {
             		x= false;
             		time++;
             		previousx/=1.5; previousy/=1.5;
-            		x= false;
+            		centerX = newX; centerY = newY;
             		recursive(newX - previousx, newX + previousx , newY - previousy, newY + previousy, time, 1, new ComplexNumber(0, 0));
+            		StdDraw.show();
             		x= true;
             	}	
             } else if (StdDraw.isKeyPressed(79)) {
@@ -72,13 +86,17 @@ public class mandelbrot {
             		x= false;
             		time--;
             		previousx*=1.5; previousy*=1.5;	
+           			centerX = newX; centerY = newY;
            			recursive(newX - previousx, newX + previousx , newY - previousy, newY + previousy, time, 1, new ComplexNumber(0, 0));
+            		StdDraw.show();
             		x= true;
             	} else if (lastX > 400) {
             		x= false;
             		timeJ--;
             		previousJx*=1.5; previousJy*=1.5;	
+            		centerJX = newJX; centerJY = newJY;
             		recursive(newJX - previousJx, newJX + previousJx , newJY - previousJy, newJY + previousJy, timeJ, 2, new ComplexNumber(newX, newY));
+            		StdDraw.show();
             		x= true;
             	}	
             }	
@@ -88,8 +106,8 @@ public class mandelbrot {
 	public static void recursive(double x1, double x2, double y1, double y2, double time, int choice, ComplexNumber juliaC){
 		int ans;
 		System.out.println(x1+" "+x2+" "+y1+" "+y2);
-		for (double x = x1; x<= x2; x+=0.03/(Math.pow(time, 2))){
-			for(double y = y1; y<=y2; y+=0.03/(Math.pow(time, 2))) {
+		for (double x = x1; x<= x2; x+=0.02/Math.pow(2,time)){
+			for(double y = y1; y<=y2; y+=0.02/Math.pow(2,time)) {
 				if (choice ==1) {
 					ans = check(juliaC, new ComplexNumber(x, y), 0);
 					color(ans);
