@@ -1,6 +1,6 @@
 # Mandelbrot-Set
 
-####A Trinity Adv. Computer Science Project
+#### A Trinity Adv. Computer Science Project
 
 A Java recursion program that draws the Mandelbrot and Julia Sets. Functionality includes zoom, complex-plane scaling and coordinates, and to-infinity indicator.
 
